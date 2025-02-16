@@ -1,15 +1,19 @@
 import os
+import pathlib
 from fastapi import FastAPI
 from pydantic import BaseModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
-# Set Hugging Face cache directory to a writable location
-os.environ["TRANSFORMERS_CACHE"] = "/app/cache"
-os.environ["HF_HOME"] = "/app/cache"
+# Define a writable cache directory
+CACHE_DIR = "/tmp/huggingface"
 
-# Ensure the cache directory exists
-os.makedirs("/app/cache", exist_ok=True)
+# Set Hugging Face environment variables
+os.environ["TRANSFORMERS_CACHE"] = CACHE_DIR
+os.environ["HF_HOME"] = CACHE_DIR
+
+# Ensure the directory exists and has the correct permissions
+pathlib.Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
 
 app = FastAPI()
 
