@@ -12,6 +12,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Fetch full history to avoid shallow update issues
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -36,12 +38,17 @@ jobs:
         git remote add hf https://huggingface.co/spaces/kohlin/legal-chatbot || true
         git remote set-url hf https://kohlin:${{ secrets.HF_TOKEN }}@huggingface.co/spaces/kohlin/legal-chatbot
 
+    - name: Set up Git LFS (if needed)
+      run: |
+        git lfs install
+        git lfs pull hf main || true
+
     - name: Pull changes from Hugging Face Space (merge histories)
       run: |
         git pull hf main --allow-unrelated-histories --no-rebase || true
 
     - name: Push code to Hugging Face Space
       run: |
-        git push hf main --force
+        git push hf main --force-with-lease
       env:
         HUGGINGFACE_TOKEN: ${{ secrets.HF_TOKEN }}
