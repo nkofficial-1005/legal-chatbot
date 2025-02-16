@@ -1,20 +1,14 @@
-import os
-import pathlib
 from fastapi import FastAPI
 from pydantic import BaseModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
-CACHE_DIR = "/app/cache"
-os.makedirs(CACHE_DIR, exist_ok=True)
-os.environ["TRANSFORMERS_CACHE"] = CACHE_DIR
-
 app = FastAPI()
 
+# Model and tokenizer details
 model_name = "microsoft/phi-2"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
+tokenizer = AutoTokenizer.from_pretrained(model_name, use_cache=False)
 model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", torch_dtype=torch.float16)
-
 
 class ChatRequest(BaseModel):
     message: str
