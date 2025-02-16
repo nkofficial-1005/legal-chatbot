@@ -4,14 +4,14 @@ from pydantic import BaseModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
-cache_dir = "./cache" 
+cache_dir = os.path.join(os.getcwd(), "cache")
 os.environ["HF_HOME"] = cache_dir
 os.environ["TRANSFORMERS_CACHE"] = os.path.join(cache_dir, "transformers")
+
 os.makedirs(os.environ["TRANSFORMERS_CACHE"], exist_ok=True)
 
 app = FastAPI()
 
-# Model and tokenizer details
 model_name = "microsoft/phi-2"
 tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
 model = AutoModelForCausalLM.from_pretrained(
