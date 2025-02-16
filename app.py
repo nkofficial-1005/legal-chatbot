@@ -14,7 +14,6 @@ def get_writable_cache_dir():
         os.remove(test_path)
         return repo_cache
     except Exception as e:
-        print("WARNING: Repository cache directory not writable. Falling back to /tmp.", file=sys.stderr)
         tmp_cache = os.path.join(tempfile.gettempdir(), "cache")
         os.makedirs(tmp_cache, exist_ok=True)
         return tmp_cache
@@ -37,24 +36,27 @@ import torch
 # Model and tokenizer details
 model_name = "microsoft/phi-2"
 tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
+# Load the model on CPU (remove device_map and torch_dtype for CPU usage)
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
-    device_map="auto",
-    torch_dtype=torch.float16,
     trust_remote_code=True
 )
+model.to("cpu")
 
 def generate_response(prompt: str) -> str:
     """
-    Given a prompt, generate a response from the model.
+    Given a prompt, generate a response from the model on CPU.
     """
-    inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
+    # Tokenize the prompt (on CPU by default)
+    inputs = tokenizer(prompt, return_tensors="pt")
+    # Ensure the tensors are on CPU
+    inputs = {k: v.to("cpu") for k, v in inputs.items()}
     output = model.generate(**inputs, max_length=200)
     response = tokenizer.decode(output[0], skip_special_tokens=True)
     return response
 
 # --- Gradio UI Setup ---
-import gradio as gr  # Make sure to add gradio to your requirements file
+import gradio as gr  # Make sure gradio is in your requirements.txt
 
 demo = gr.Interface(
     fn=generate_response,
@@ -62,7 +64,7 @@ demo = gr.Interface(
     outputs=gr.Textbox(label="Response"),
     title="Legal Chatbot",
     description="Enter a message to receive legal advice powered by Microsoft phi-2.",
-    allow_flagging="never"  # disables flagging
+    allow_flagging="never"  # disable flagging to avoid permission issues
 )
 
 if __name__ == "__main__":
