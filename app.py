@@ -54,7 +54,7 @@ def generate_response(prompt: str) -> str:
     return response
 
 # --- Gradio UI Setup ---
-import gradio as gr  # Ensure 'gradio' is added to your requirements
+import gradio as gr  # Make sure to add gradio to your requirements file
 
 demo = gr.Interface(
     fn=generate_response,
@@ -62,7 +62,7 @@ demo = gr.Interface(
     outputs=gr.Textbox(label="Response"),
     title="Legal Chatbot",
     description="Enter a message to receive legal advice powered by Microsoft phi-2.",
-    flagging="never"  # Disables flagging to prevent directory permission issues
+    allow_flagging="never"  # disables flagging
 )
 
 if __name__ == "__main__":
