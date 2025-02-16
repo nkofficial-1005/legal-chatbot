@@ -3,7 +3,7 @@ name: Deploy to Hugging Face Spaces
 on:
   push:
     branches:
-      - main  # Or replace with master if your default branch is master
+      - main
 
 jobs:
   deploy:
@@ -16,9 +16,15 @@ jobs:
     - name: Set up Hugging Face CLI
       run: |
         pip install huggingface_hub
-        huggingface-cli login --token ${{ secrets.HF_TOKEN }}
-        
+        echo ${{ secrets.HF_TOKEN }} | huggingface-cli login --token
+    
+    - name: Configure Git authentication
+      run: |
+        git config --global user.name "nkofficial-1005"
+        git config --global user.email "nikita.datascience@gmail.com"
+        git remote add hf https://huggingface.co/spaces/kohlin/legal-chatbot
+        git remote set-url hf https://huggingface.co/${{ secrets.HF_TOKEN }}@huggingface.co/spaces/kohlin/legal-chatbot
+
     - name: Push to Hugging Face Spaces
       run: |
-        git remote add hf https://huggingface.co/spaces/kohlin/legal-chatbot
         git push hf main
