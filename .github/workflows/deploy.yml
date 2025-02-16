@@ -37,7 +37,7 @@ jobs:
 
     - name: Push code to Hugging Face Space
       run: |
-        git remote set-url hf https://$HUGGINGFACE_TOKEN@huggingface.co/spaces/kohlin/legal-chatbot
+        git remote set-url hf https://kohlin:$HUGGINGFACE_TOKEN@huggingface.co/spaces/kohlin/legal-chatbot
         git push hf main
       env:
         HUGGINGFACE_TOKEN: ${{ secrets.HF_TOKEN }}
