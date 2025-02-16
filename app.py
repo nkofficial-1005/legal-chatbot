@@ -26,18 +26,13 @@ cache_dir = get_writable_cache_dir()
 os.environ["HF_HOME"] = cache_dir
 os.environ["TRANSFORMERS_CACHE"] = os.path.join(cache_dir, "transformers")
 os.environ["XDG_CACHE_HOME"] = cache_dir
-# Ensure HOME points to a writable directory (here, the repository's root)
 os.environ["HOME"] = os.getcwd()
 
 # Ensure the transformers cache directory exists
 os.makedirs(os.environ["TRANSFORMERS_CACHE"], exist_ok=True)
 
-from fastapi import FastAPI
-from pydantic import BaseModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
-
-app = FastAPI()
 
 # Model and tokenizer details
 model_name = "microsoft/phi-2"
@@ -49,17 +44,26 @@ model = AutoModelForCausalLM.from_pretrained(
     trust_remote_code=True
 )
 
-class ChatRequest(BaseModel):
-    message: str
-
-@app.post("/chat")
-async def chat(request: ChatRequest):
-    prompt = request.message
+def generate_response(prompt: str) -> str:
+    """
+    Given a prompt, generate a response from the model.
+    """
     inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
     output = model.generate(**inputs, max_length=200)
     response = tokenizer.decode(output[0], skip_special_tokens=True)
-    return {"response": response}
+    return response
+
+# --- Gradio UI Setup ---
+import gradio as gr
+
+demo = gr.Interface(
+    fn=generate_response,
+    inputs=gr.Textbox(label="Enter your message", placeholder="Type your message here..."),
+    outputs=gr.Textbox(label="Response"),
+    title="Legal Chatbot",
+    description="Enter a message to receive legal advice powered by Microsoft phi-2."
+)
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=7860)
+    # Launch the Gradio app. When deployed to Hugging Face Spaces, this UI will be displayed.
+    demo.launch(server_name="0.0.0.0", server_port=7860)
