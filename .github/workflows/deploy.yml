@@ -25,7 +25,7 @@ jobs:
         git config --global user.name "nkofficial-1005"
         git config --global user.email "nikita.datascience@gmail.com"
         git remote add hf https://huggingface.co/spaces/kohlin/legal-chatbot
-        git remote set-url hf https://huggingface.co/${{ secrets.HF_TOKEN }}@huggingface.co/spaces/kohlin/legal-chatbot
+        git remote set-url hf https://$HUGGINGFACE_USERNAME:${{ secrets.HF_TOKEN }}@huggingface.co/spaces/kohlin/legal-chatbot
 
     - name: Push to Hugging Face Spaces
       run: |
