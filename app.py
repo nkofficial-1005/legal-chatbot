@@ -54,16 +54,16 @@ def generate_response(prompt: str) -> str:
     return response
 
 # --- Gradio UI Setup ---
-import gradio as gr
+import gradio as gr  # Ensure 'gradio' is added to your requirements
 
 demo = gr.Interface(
     fn=generate_response,
     inputs=gr.Textbox(label="Enter your message", placeholder="Type your message here..."),
     outputs=gr.Textbox(label="Response"),
     title="Legal Chatbot",
-    description="Enter a message to receive legal advice powered by Microsoft phi-2."
+    description="Enter a message to receive legal advice powered by Microsoft phi-2.",
+    flagging="never"  # Disables flagging to prevent directory permission issues
 )
 
 if __name__ == "__main__":
-    # Launch the Gradio app. When deployed to Hugging Face Spaces, this UI will be displayed.
     demo.launch(server_name="0.0.0.0", server_port=7860)
