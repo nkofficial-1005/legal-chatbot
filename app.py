@@ -7,8 +7,8 @@ app = FastAPI()
 
 # Model and tokenizer details
 model_name = "microsoft/phi-2"
-tokenizer = AutoTokenizer.from_pretrained(model_name, use_cache=False)
-model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", torch_dtype=torch.float16)
+tokenizer = AutoTokenizer.from_pretrained(model_name, use_cache=False, trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", torch_dtype=torch.float16, trust_remote_code=True)
 
 class ChatRequest(BaseModel):
     message: str
