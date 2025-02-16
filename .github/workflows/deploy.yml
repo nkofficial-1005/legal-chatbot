@@ -33,15 +33,15 @@ jobs:
       run: |
         git config --global user.name "nkofficial-1005"
         git config --global user.email "nikita.datascience@gmail.com"
-        git remote add hf https://huggingface.co/spaces/kohlin/legal-chatbot
+        git remote add hf https://huggingface.co/spaces/kohlin/legal-chatbot || true
+        git remote set-url hf https://kohlin:${{ secrets.HF_TOKEN }}@huggingface.co/spaces/kohlin/legal-chatbot
 
-    - name: Pull changes from Hugging Face Space (merge)
+    - name: Pull changes from Hugging Face Space (merge histories)
       run: |
-        git remote set-url hf https://kohlin:$HUGGINGFACE_TOKEN@huggingface.co/spaces/kohlin/legal-chatbot
-        git pull hf main --no-rebase
+        git pull hf main --allow-unrelated-histories --no-rebase || true
 
     - name: Push code to Hugging Face Space
       run: |
-        git push hf main
+        git push hf main --force
       env:
         HUGGINGFACE_TOKEN: ${{ secrets.HF_TOKEN }}
