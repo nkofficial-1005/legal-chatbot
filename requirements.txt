@@ -1,0 +1,11 @@
+transformers
+torch
+flask
+langchain
+openai
+bitsandbytes
+sentence-transformers
+fastapi
+uvicorn
+mangum
+accelerate
